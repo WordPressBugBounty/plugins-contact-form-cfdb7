@@ -295,15 +295,12 @@ class CFDB7_List_Table extends WP_List_Table
         $table_name = $cfdb->prefix.'db7_forms';
         $action     = $this->current_action();
 
+        if ( ! current_user_can( 'cfdb7_access' ) && ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'You are not allowed to perform this action.', 'contact-form-cfdb7' ) );
+        }
+
         if ( !empty( $action ) ) {
-
-            $nonce        = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
-            $nonce_action = 'bulk-' . $this->_args['plural'];
-
-            if ( !wp_verify_nonce( $nonce, $nonce_action ) ){
-
-                wp_die( 'Not valid..!!' );
-            }
+            check_admin_referer( 'bulk-' . $this->_args['plural'] );
         }
 
         $form_ids = isset( $_POST['contact_form'] ) ? $_POST['contact_form'] : array();
